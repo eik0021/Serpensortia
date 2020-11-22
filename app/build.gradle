@@ -30,4 +30,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     //dependencies for biometric sensor
     implementation 'androidx.biometric:biometric:1.0.1'
+    //sugar orm dependencies
+    implementation 'com.github.satyan:sugar:1.5'
+
 }
