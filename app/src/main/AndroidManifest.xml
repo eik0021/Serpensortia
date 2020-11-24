@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.serpensortia">
-    
-    <uses-permission android:name="android.permission.USE_BIOMETRIC"/>
 
     <application
         android:name=".configs.Sugar"
@@ -12,6 +10,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity
+            android:name=".AnimalMainActivity"
+            android:label="@string/title_activity_animal_main"></activity>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,14 +23,15 @@
 
         <meta-data
             android:name="DATABASE"
-            android:value="serpensortia.db"/>
+            android:value="serpensortia.db" />
         <meta-data
             android:name="VERSION"
-            android:value="1"/>
+            android:value="1" />
         <meta-data
             android:name="QUERY_LOG"
-            android:value="TRUE"/>
-
+            android:value="TRUE" />
     </application>
+
+    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
 
 </manifest>

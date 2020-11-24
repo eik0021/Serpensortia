@@ -6,6 +6,7 @@ import androidx.biometric.BiometricManager;
 import androidx.biometric.BiometricPrompt;
 import androidx.core.content.ContextCompat;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
@@ -57,6 +58,9 @@ public class MainActivity extends AppCompatActivity {
             public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
                 super.onAuthenticationSucceeded(result);
                 Toast.makeText(getApplicationContext(), "Úspěšné přihlášení", Toast.LENGTH_SHORT).show();
+               Intent intent = new Intent(getApplicationContext(),
+                        AnimalMainActivity.class);
+                startActivity(intent);
             }
 
             @Override
