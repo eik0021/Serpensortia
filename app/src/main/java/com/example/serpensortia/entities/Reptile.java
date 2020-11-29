@@ -10,32 +10,32 @@ public class Reptile extends SugarRecord {
     private Long reptileId;
 
     @Column(name = "reptile_name")
-    private String name;
+    private String name=null;
 
     @Column(name = "reptile_species")
-    private String species;
+    private String species=null;
 
     @Column(name = "reptile_sex_type")
-    private String sexType;
+    private String sexType=null;
 
     @Column(name = "reptile_birth_day")
-    private Integer birthDay;
+    private Long birthDay=null;
 
     @Column(name = "reptile_image")
-    private String image;
+    private String image=null;
 
     @Column(name = "reptile_qrcode")
-    private String qrcode;
+    private String qrcode=null;
 
     @Column(name = "reptile_nfc_code")
-    private String nfcCode;
+    private String nfcCode=null;
 
-    private Group group;
+    private Group group=null;
 
     public Reptile() {
     }
 
-    public Reptile(String name, String species, String sexType, Integer birthDay, String image, String qrcode, String nfcCode, Group group) {
+    public Reptile(String name, String species, String sexType, Long birthDay, String image, String qrcode, String nfcCode, Group group) {
         this.name = name;
         this.species = species;
         this.sexType = sexType;
@@ -74,11 +74,11 @@ public class Reptile extends SugarRecord {
         this.sexType = sexType;
     }
 
-    public Integer getBirthDay() {
+    public Long getBirthDay() {
         return birthDay;
     }
 
-    public void setBirthDay(Integer birthDay) {
+    public void setBirthDay(Long birthDay) {
         this.birthDay = birthDay;
     }
 

@@ -5,10 +5,10 @@ import com.orm.dsl.Column;
 import com.orm.dsl.Unique;
 
 public class Group extends SugarRecord {
-    @Unique
+  /*  @Unique
     @Column(name = "group_id")
     private Long groupId;
-
+*/
     @Column(name = "group_name")
     private String name;
 
@@ -19,10 +19,10 @@ public class Group extends SugarRecord {
     public Group(String name) {
         this.name = name;
     }
-
+/*
     public Long getGroupId() {
         return groupId;
-    }
+    }*/
 
     public String getName() {
         return name;
