@@ -29,7 +29,53 @@ public class AddAnimalActivity extends BaseActivity {
 
     private Reptile reptile;
 
+    @Override
+    void init() {
+        ActiveAndroid.initialize(getApplication());
 
+        reptile = new Reptile();
+
+        editTextName = findViewById(R.id.editTextName);
+        editTextSpecies = findViewById(R.id.editTextSpecies);
+        editTextBirthDate = findViewById(R.id.editTextBirthDate);
+
+        spinnerSexType = findViewById(R.id.spinnerSexType);
+        spinnerGroup = findViewById(R.id.spinnerGroup);
+
+        List<Group> groups = Group.getAllGroups();
+
+        List<String> groupsList = new ArrayList<>();
+        for (Group g : groups) {
+            groupsList.add(g.name);
+        }
+
+        List<String> sexTypes = new ArrayList<>();
+        sexTypes.add("samec");
+        sexTypes.add("samice");
+        sexTypes.add("neznámý");
+
+        ArrayAdapter<String> dataGroupAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, groupsList);
+        ArrayAdapter<String> dataSexTypeAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, sexTypes);
+
+        spinnerGroup.setAdapter(dataGroupAdapter);
+        spinnerSexType.setAdapter(dataSexTypeAdapter);
+
+        spinnerGroup.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Log.d("onSelected", "onItemSelected: " + parent.getItemAtPosition(position).toString());
+                reptile.group = Group.findByName(parent.getItemAtPosition(position).toString());
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+    }
+/*
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,7 +124,7 @@ public class AddAnimalActivity extends BaseActivity {
         });
 
 
-    }
+    }*/
 
     @Override
     protected int getContentViewId() {

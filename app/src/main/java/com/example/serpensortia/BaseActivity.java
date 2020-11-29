@@ -20,6 +20,8 @@ abstract class BaseActivity extends AppCompatActivity implements BottomNavigatio
 
         navigationView = (BottomNavigationView) findViewById(R.id.navigation);
         navigationView.setOnNavigationItemSelectedListener(this);
+
+        init();
     }
 
     @Override
@@ -68,4 +70,5 @@ abstract class BaseActivity extends AppCompatActivity implements BottomNavigatio
 
     abstract int getNavigationMenuItemId();//Which menu item selected and change the state of that menu item
 
+    abstract void init();
 }
