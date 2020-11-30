@@ -9,6 +9,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -26,6 +27,7 @@ import java.util.List;
 public class AddAnimalActivity extends BaseActivity {
     private EditText editTextName, editTextSpecies, editTextBirthDate;
     private Spinner spinnerSexType, spinnerGroup;
+    private ImageView imageView;
 
     private Reptile reptile;
 
@@ -41,6 +43,8 @@ public class AddAnimalActivity extends BaseActivity {
 
         spinnerSexType = findViewById(R.id.spinnerSexType);
         spinnerGroup = findViewById(R.id.spinnerGroup);
+
+        imageView = findViewById(R.id.imageView);
 
         List<Group> groups = Group.getAllGroups();
 
@@ -66,6 +70,18 @@ public class AddAnimalActivity extends BaseActivity {
                 Log.d("onSelected", "onItemSelected: " + parent.getItemAtPosition(position).toString());
                 reptile.group = Group.findByName(parent.getItemAtPosition(position).toString());
 
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        spinnerSexType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                reptile.sexType = parent.getItemAtPosition(position).toString();
             }
 
             @Override
