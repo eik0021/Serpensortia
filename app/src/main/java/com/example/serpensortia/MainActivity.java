@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
                 super.onAuthenticationSucceeded(result);
                 Toast.makeText(getApplicationContext(), "Úspěšné přihlášení", Toast.LENGTH_SHORT).show();
                Intent intent = new Intent(getApplicationContext(),
-                        AnimalMainActivity.class);
+                        AddAnimalActivity.class);
                 startActivity(intent);
             }
 

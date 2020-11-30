@@ -8,6 +8,7 @@ import android.view.MenuItem;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.activeandroid.ActiveAndroid;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 abstract class BaseActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
@@ -20,6 +21,8 @@ abstract class BaseActivity extends AppCompatActivity implements BottomNavigatio
 
         navigationView = (BottomNavigationView) findViewById(R.id.navigation);
         navigationView.setOnNavigationItemSelectedListener(this);
+
+        ActiveAndroid.initialize(getApplication());
 
         init();
     }

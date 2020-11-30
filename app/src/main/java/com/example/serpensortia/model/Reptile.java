@@ -5,6 +5,8 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 
+import java.util.List;
+
 @Table(name = "Reptile")
 public class Reptile extends Model {
 
@@ -39,5 +41,10 @@ public class Reptile extends Model {
     public static Reptile findByName(String name){
         return new Select().from(Reptile.class).where("reptile_name = ?", name).executeSingle();
     }
+
+    public static List<Reptile> findAll() {
+        return new Select().from(Reptile.class).orderBy("id DESC").execute();
+    }
+
 
 }

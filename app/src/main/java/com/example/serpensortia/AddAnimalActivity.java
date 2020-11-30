@@ -52,7 +52,6 @@ public class AddAnimalActivity extends BaseActivity implements DatePickerDialog.
 
     @Override
     void init() {
-        ActiveAndroid.initialize(getApplication());
 
         reptile = new Reptile();
 
