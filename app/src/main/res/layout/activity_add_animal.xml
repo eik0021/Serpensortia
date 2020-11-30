@@ -60,13 +60,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/spinnerGroup" />
 
-    <EditText
-        android:id="@+id/editTextBirthDate"
+    <TextView
+        android:id="@+id/birthDay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:ems="10"
-        android:inputType="date"
+        android:layout_marginTop="24dp"
+        android:text="Datum narození"
+        android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/spinnerSexType" />
@@ -75,10 +75,10 @@
         android:id="@+id/spinnerGroup"
         android:layout_width="213dp"
         android:layout_height="45dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="24dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextBirthDate" />
+        app:layout_constraintTop_toBottomOf="@+id/birthDay" />
 
     <include
         layout="@layout/item_bottom_navigation"

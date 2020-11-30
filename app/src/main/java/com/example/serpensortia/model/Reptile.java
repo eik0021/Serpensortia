@@ -3,6 +3,7 @@ package com.example.serpensortia.model;
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
+import com.activeandroid.query.Select;
 
 @Table(name = "Reptile")
 public class Reptile extends Model {
@@ -34,4 +35,9 @@ public class Reptile extends Model {
     public Reptile() {
         super();
     }
+
+    public static Reptile findByName(String name){
+        return new Select().from(Reptile.class).where("reptile_name = ?", name).executeSingle();
+    }
+
 }
