@@ -160,6 +160,7 @@ public class AddAnimalActivity extends BaseActivity implements DatePickerDialog.
         Reptile r = Reptile.findByName(reptile.name);
         Log.d("saved file", " " + r.image);
         startActivity(new Intent(this, AnimalMainActivity.class));
+        finish();
     }
 
     public void saveAnimal(View view) {

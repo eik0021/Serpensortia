@@ -42,6 +42,10 @@ public class Reptile extends Model {
         return new Select().from(Reptile.class).where("reptile_name = ?", name).executeSingle();
     }
 
+    public static Reptile findById(long id){
+        return new Select().from(Reptile.class).where("id = ?", id).executeSingle();
+    }
+
     public static List<Reptile> findAll() {
         return new Select().from(Reptile.class).orderBy("id DESC").execute();
     }
