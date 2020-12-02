@@ -50,5 +50,7 @@ public class Reptile extends Model {
         return new Select().from(Reptile.class).orderBy("id DESC").execute();
     }
 
-
+    public List<Action> actions() {
+        return getMany(Action.class, "action_reptile");
+    }
 }

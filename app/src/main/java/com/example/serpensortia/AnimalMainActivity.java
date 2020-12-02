@@ -36,7 +36,7 @@ public class AnimalMainActivity extends BaseActivity {
                 Reptile selectedItem = (Reptile) parent.getItemAtPosition(position);
                 Log.d("item click", "onItemClick: image: " + selectedItem.image );
                 Intent intent = new Intent(AnimalMainActivity.super.getApplicationContext(), ShowReptileActivity.class);
-                intent.putExtra("reptile_name", selectedItem.name);
+                intent.putExtra("reptile_name", selectedItem.getId());
                 startActivityForResult(intent, 0);
             }
         });
