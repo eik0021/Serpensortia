@@ -2,10 +2,15 @@ package com.example.serpensortia.model;
 
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
+import com.activeandroid.query.Select;
 import com.example.serpensortia.model.Reptile;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
-public class Feeding extends Model {
+
+public class Feeding extends Model implements Comparable<Feeding> {
 
     @Column(name = "feeding_date")
     public String date;
@@ -22,10 +27,36 @@ public class Feeding extends Model {
     @Column(name = "feeding_refused")
     public Integer refused;
 
-    @Column(name = "feeding_reptile")
+    @Column(name = "feeding_reptile", onUpdate = Column.ForeignKeyAction.CASCADE, onDelete = Column.ForeignKeyAction.CASCADE)
     public Reptile reptile;
 
     public Feeding() {
         super();
+    }
+
+    public Date getDate(){
+        try {
+            return new SimpleDateFormat("dd.MM.yyyy").parse(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static Feeding findById(long id){
+        return new Select().from(Feeding.class).where("id = ?", id).executeSingle();
+    }
+
+    @Override
+    public String toString() {
+        return date + "\n potrava " + (refused == 1 ? "odmítnuta" : "přijata");
+    }
+
+    @Override
+    public int compareTo(Feeding o) {
+        if (getDate() == null || o.getDate() == null) {
+            return 0;
+        }
+        return o.getDate().compareTo(getDate());
     }
 }

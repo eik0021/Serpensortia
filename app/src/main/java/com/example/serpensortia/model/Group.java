@@ -16,6 +16,11 @@ public class Group extends Model {
         super();
     }
 
+    @Override
+    public String toString() {
+        return name;
+    }
+
     public static Group findByName(String name){
         return new Select().from(Group.class).where("group_name = ?", name).executeSingle();
     }

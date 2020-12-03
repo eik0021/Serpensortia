@@ -21,7 +21,7 @@
         <activity android:name=".AddAnimalActivity" />
         <activity
             android:name=".AnimalMainActivity"
-            android:label="@string/title_activity_animal_main" />
+            android:label="@string/app_name" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -35,7 +35,7 @@
             android:value="serpensortiaDB.db" />
         <meta-data
             android:name="AA_DB_VERSION"
-            android:value="4" />
+            android:value="5" />
 
         <provider
             android:name="com.activeandroid.content.ContentProvider"

@@ -53,4 +53,8 @@ public class Reptile extends Model {
     public List<Action> actions() {
         return getMany(Action.class, "action_reptile");
     }
+
+    public List<Feeding> feedings() {
+        return getMany(Feeding.class, "feeding_reptile");
+    }
 }

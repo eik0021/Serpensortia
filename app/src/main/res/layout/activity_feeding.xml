@@ -4,7 +4,68 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#EFEAEA"
     tools:context=".FeedingActivity">
+
+    <EditText
+        android:id="@+id/foodTypeEditText"
+        style="@style/Widget.AppCompat.EditText"
+        android:layout_width="307dp"
+        android:layout_height="54dp"
+        android:layout_marginTop="8dp"
+        android:background="#EDDADA"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:shadowColor="#8C8484"
+        android:text="Name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView12" />
+
+    <EditText
+        android:id="@+id/foodCountEditText"
+        android:layout_width="87dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="8dp"
+        android:background="#EFEAEA"
+        android:ems="10"
+        android:inputType="number"
+        app:layout_constraintStart_toStartOf="@+id/foodTypeEditText"
+        app:layout_constraintTop_toBottomOf="@+id/textView13" />
+
+    <EditText
+        android:id="@+id/weightEditText"
+        android:layout_width="132dp"
+        android:layout_height="45dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:background="#EFEAEA"
+        android:backgroundTint="#EFEAEA"
+        android:ems="10"
+        android:inputType="number"
+        app:layout_constraintStart_toEndOf="@+id/foodCountEditText"
+        app:layout_constraintTop_toBottomOf="@+id/textView14" />
+
+    <TextView
+        android:id="@+id/textView12"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="Druh potravy"
+        app:layout_constraintStart_toStartOf="@+id/foodTypeEditText"
+        app:layout_constraintTop_toBottomOf="@+id/feedingDateTxt" />
+
+    <TextView
+        android:id="@+id/feedingDateTxt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:onClick="selectFeedingDate"
+        android:text="Datum"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView10" />
 
     <TextView
         android:id="@+id/textView10"
@@ -16,58 +77,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/feedingDateTxt"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="Datum"
-        android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView10" />
-
-    <EditText
-        android:id="@+id/foodTypeEditText"
-        android:layout_width="307dp"
-        android:layout_height="54dp"
-        android:layout_marginTop="8dp"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="Name"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView12" />
-
-    <TextView
-        android:id="@+id/textView12"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text="Druh potravy"
-        app:layout_constraintTop_toBottomOf="@+id/feedingDateTxt"
-        tools:layout_editor_absoluteX="47dp" />
-
-    <EditText
-        android:id="@+id/foodCountEditText"
-        android:layout_width="118dp"
-        android:layout_height="45dp"
-        android:layout_marginTop="8dp"
-        android:ems="10"
-        android:inputType="number"
-        app:layout_constraintStart_toStartOf="@+id/foodTypeEditText"
-        app:layout_constraintTop_toBottomOf="@+id/textView13" />
-
-    <EditText
-        android:id="@+id/weightEditText"
-        android:layout_width="118dp"
-        android:layout_height="45dp"
-        android:layout_marginTop="8dp"
-        android:ems="10"
-        android:inputType="number"
-        app:layout_constraintEnd_toEndOf="@+id/foodTypeEditText"
-        app:layout_constraintTop_toBottomOf="@+id/textView14" />
 
     <TextView
         android:id="@+id/textView13"
@@ -84,6 +93,27 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:text="Celková hmotnost(g)"
-        app:layout_constraintEnd_toEndOf="@+id/foodTypeEditText"
+        app:layout_constraintStart_toStartOf="@+id/weightEditText"
         app:layout_constraintTop_toBottomOf="@+id/foodTypeEditText" />
+
+    <CheckBox
+        android:id="@+id/foodRefusedCheckBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="17dp"
+        android:text="Potrava odmítnuta"
+        app:layout_constraintStart_toStartOf="@+id/foodCountEditText"
+        app:layout_constraintTop_toBottomOf="@+id/foodCountEditText" />
+
+    <Button
+        android:id="@+id/saveFeedButn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="64dp"
+        android:layout_marginBottom="50dp"
+        android:onClick="saveFeedingRecord"
+        android:text="uložit"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
