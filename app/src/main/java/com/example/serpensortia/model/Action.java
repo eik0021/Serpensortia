@@ -2,6 +2,7 @@ package com.example.serpensortia.model;
 
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
+import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
 
 import java.text.ParseException;
@@ -16,7 +17,7 @@ public class Action extends Model implements Comparable<Action>{
     @Column(name = "action_date")
     public String date;
 
-    @Column(name = "action_reptile", onUpdate = Column.ForeignKeyAction.CASCADE, onDelete = Column.ForeignKeyAction.CASCADE)
+    @Column(name = "action_reptile")
     public Reptile reptile;
 
     public Action() {
@@ -30,6 +31,10 @@ public class Action extends Model implements Comparable<Action>{
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static void deleteByReptileId(long id){
+        new Delete().from(Action.class).where("action_reptile = ?", id).execute();
     }
 
     public static List<Action> findByReptile(Reptile r){

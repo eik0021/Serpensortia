@@ -15,6 +15,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -42,11 +43,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-public class AddAnimalActivity extends BaseActivity implements DatePickerDialog.OnDateSetListener{
+public class AddAnimalActivity extends BaseActivity implements DatePickerDialog.OnDateSetListener {
     private EditText editTextName, editTextSpecies;
     private TextView birthDayText;
     private Spinner spinnerSexType, spinnerGroup;
     private ImageView imageView;
+
+    private ArrayAdapter<Group> dataGroupAdapter;
 
     private Reptile reptile;
 
@@ -81,37 +84,18 @@ public class AddAnimalActivity extends BaseActivity implements DatePickerDialog.
         });
 
         //setup lists for data adapters
-        List<Group> groups = Group.getAllGroups();
-
-        List<String> groupsList = new ArrayList<>();
-        for (Group g : groups) {
-            groupsList.add(g.name);
-        }
+       setGroupSpinner();
 
         List<String> sexTypes = new ArrayList<>();
         sexTypes.add("samec");
         sexTypes.add("samice");
         sexTypes.add("neznámý");
 
-        ArrayAdapter<String> dataGroupAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, groupsList);
         ArrayAdapter<String> dataSexTypeAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, sexTypes);
 
-        spinnerGroup.setAdapter(dataGroupAdapter);
         spinnerSexType.setAdapter(dataSexTypeAdapter);
 
-        spinnerGroup.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Log.d("onSelected", "onItemSelected: " + parent.getItemAtPosition(position).toString());
-                reptile.group = Group.findByName(parent.getItemAtPosition(position).toString());
 
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
 
         spinnerSexType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -127,6 +111,23 @@ public class AddAnimalActivity extends BaseActivity implements DatePickerDialog.
 
     }
 
+    private void setGroupSpinner(){
+        ArrayList<Group> groupArrayList = (ArrayList<Group>) Group.getAllGroups();
+        dataGroupAdapter = new ArrayAdapter<Group>(this, android.R.layout.simple_spinner_dropdown_item, groupArrayList);
+        spinnerGroup.setAdapter(dataGroupAdapter);
+
+        spinnerGroup.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                reptile.group = (Group) parent.getItemAtPosition(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+    }
 
     @Override
     protected int getContentViewId() {
@@ -138,15 +139,15 @@ public class AddAnimalActivity extends BaseActivity implements DatePickerDialog.
         return R.id.action_profile;
     }
 
-    private void insertRecord(){
-        try{
+    private void insertRecord() {
+        try {
             Reptile reptileForCheck = Reptile.findByName(editTextName.getText().toString());
-            if(editTextName.getText().toString().equals(reptileForCheck.name)){
+            if (editTextName.getText().toString().equals(reptileForCheck.name)) {
                 Toast.makeText(getApplicationContext(), "Jméno je již evidováno zvolte prosím jiné", Toast.LENGTH_LONG);
                 Log.d("record", "name already exist");
                 return;
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             Log.d("record", "record wasn't found");
         }
 
@@ -164,10 +165,10 @@ public class AddAnimalActivity extends BaseActivity implements DatePickerDialog.
     }
 
     public void saveAnimal(View view) {
-     insertRecord();
+        insertRecord();
     }
 
-    private String saveImage(Bitmap bitmap, String filename){
+    private String saveImage(Bitmap bitmap, String filename) {
         ContextWrapper cw = new ContextWrapper(getApplicationContext());
         File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
         File file = new File(directory, filename + ".jpg");
@@ -191,10 +192,10 @@ public class AddAnimalActivity extends BaseActivity implements DatePickerDialog.
     }
 
     private void selectImage(Context context) {
-        final CharSequence[] options = { "Vyfotit", "Vybrat z galerie","Zrušit" };
+        final CharSequence[] options = {"Vyfotit", "Vybrat z galerie", "Zrušit"};
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Choose your profile picture");
+        builder.setTitle("Vyberte obrázek");
 
         builder.setItems(options, new DialogInterface.OnClickListener() {
 
@@ -207,7 +208,7 @@ public class AddAnimalActivity extends BaseActivity implements DatePickerDialog.
 
                 } else if (options[item].equals("Vybrat z galerie")) {
                     Intent pickPhoto = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                    startActivityForResult(pickPhoto , 1);
+                    startActivityForResult(pickPhoto, 1);
 
                 } else if (options[item].equals("Zrušit")) {
                     dialog.dismiss();
@@ -251,7 +252,39 @@ public class AddAnimalActivity extends BaseActivity implements DatePickerDialog.
         }
     }
 
-    private void showDatePickerDialog(){
+    private void createGroup() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Zadejte název Skupiny");
+
+        // Set up the input
+        final EditText input = new EditText(this);
+        // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+        input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+        builder.setView(input);
+
+        // Set up the buttons
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if(!input.getText().toString().isEmpty()){
+                    Group group = new Group();
+                    group.name = input.getText().toString();
+                    group.save();
+                    setGroupSpinner();
+                }
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
+    }
+
+    private void showDatePickerDialog() {
         DatePickerDialog datePickerDialog = new DatePickerDialog(
                 this,
                 this,
@@ -265,7 +298,12 @@ public class AddAnimalActivity extends BaseActivity implements DatePickerDialog.
 
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-        String date = dayOfMonth + "." + (month+1) + "." + year;
+        String date = dayOfMonth + "." + (month + 1) + "." + year;
         birthDayText.setText(date);
+    }
+
+    public void addGroupClick(View view) {
+        createGroup();
+        setGroupSpinner();
     }
 }

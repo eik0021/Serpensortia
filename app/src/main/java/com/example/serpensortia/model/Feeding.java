@@ -2,6 +2,7 @@ package com.example.serpensortia.model;
 
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
+import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
 import com.example.serpensortia.model.Reptile;
 
@@ -27,7 +28,7 @@ public class Feeding extends Model implements Comparable<Feeding> {
     @Column(name = "feeding_refused")
     public Integer refused;
 
-    @Column(name = "feeding_reptile", onUpdate = Column.ForeignKeyAction.CASCADE, onDelete = Column.ForeignKeyAction.CASCADE)
+    @Column(name = "feeding_reptile")
     public Reptile reptile;
 
     public Feeding() {
@@ -45,6 +46,10 @@ public class Feeding extends Model implements Comparable<Feeding> {
 
     public static Feeding findById(long id){
         return new Select().from(Feeding.class).where("id = ?", id).executeSingle();
+    }
+
+    public static void deleteByReptileId(long id){
+        new Delete().from(Feeding.class).where("feeding_reptile = ?", id).execute();
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.example.serpensortia;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -43,6 +44,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -50,13 +52,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 
 import static java.util.Comparator.comparing;
 
 public class ShowReptileActivity<Lazy> extends AppCompatActivity implements DatePickerDialog.OnDateSetListener{
     private ImageView reptileImage, sexTypeImage;
     private EditText nameTxt, speciesTxt;
-    private TextView dateTxt;
+    private TextView dateTxt, actionListTitle, feedingListTitle;
     private Spinner groupSpinner;
     private ListView actionList, feedingList;
 
@@ -70,6 +73,7 @@ public class ShowReptileActivity<Lazy> extends AppCompatActivity implements Date
     boolean canSelectDate = false;
     boolean canChangeSexType = false;
     boolean canSelectImage = false;
+    boolean imageWasChange = false;
 
     boolean editing = false;
 
@@ -88,6 +92,9 @@ public class ShowReptileActivity<Lazy> extends AppCompatActivity implements Date
 
         saveUpdate = findViewById(R.id.saveReptileChangesBtn);
         saveUpdate.setVisibility(View.GONE);
+
+        actionListTitle = findViewById(R.id.textViewActionListTile);
+        feedingListTitle = findViewById(R.id.textViewFeedingListTitle);
 
         addFeedingFab = findViewById(R.id.addFeeding);
         addActionFab = findViewById(R.id.addAction);
@@ -121,6 +128,8 @@ public class ShowReptileActivity<Lazy> extends AppCompatActivity implements Date
 
         reptileImage = findViewById(R.id.reptileImageView);
         sexTypeImage = findViewById(R.id.sexTypeImage);
+        reptileImage.setDrawingCacheEnabled(true);
+
         nameTxt = findViewById(R.id.reptileNameText);
         speciesTxt = findViewById(R.id.speciesText);
         dateTxt = findViewById(R.id.dateTextView);
@@ -216,12 +225,13 @@ public class ShowReptileActivity<Lazy> extends AppCompatActivity implements Date
 
         canChangeSexType = val;
         canSelectDate = val;
-        canSelectImage = val;
     }
 
     private void enableLists(boolean val){
         feedingList.setVisibility(val ? View.VISIBLE : View.GONE);
         actionList.setVisibility(val ? View.VISIBLE : View.GONE);
+        feedingListTitle.setVisibility(val ? View.VISIBLE : View.GONE);
+        actionListTitle.setVisibility(val ? View.VISIBLE : View.GONE);
     }
 
     private void setButtons(boolean val){
@@ -277,7 +287,6 @@ public class ShowReptileActivity<Lazy> extends AppCompatActivity implements Date
         } else if(gender.equals("neznámý")){
             sexTypeImage.setImageResource(R.drawable.ic_unknown);
         }
-
     }
 
     @Override
@@ -300,6 +309,8 @@ public class ShowReptileActivity<Lazy> extends AppCompatActivity implements Date
 
             case R.id.action_delete :
                 Toast.makeText(ShowReptileActivity.this, "Action delete clicked", Toast.LENGTH_LONG).show();
+                Feeding.deleteByReptileId(reptile.getId());
+                Action.deleteByReptileId(reptile.getId());
                 reptile.delete();
                 finish();
                 return true;
@@ -315,11 +326,52 @@ public class ShowReptileActivity<Lazy> extends AppCompatActivity implements Date
         editing = true;
     }
 
+    public void onSexTypeClick(View view){
+        if(editing){
+            final CharSequence[] options = { "Samec", "Samice","Neznámý", "zrušit" };
 
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Zvolte pohlaví");
+
+            builder.setItems(options, new DialogInterface.OnClickListener() {
+
+                @Override
+                public void onClick(DialogInterface dialog, int item) {
+                    if (options[item].equals("Samec")) {
+                        reptile.sexType = "samec";
+                        setSexTypeImage(reptile.sexType);
+                        dialog.dismiss();
+
+                    } else if (options[item].equals("Samice")) {
+                        reptile.sexType = "samice";
+                        setSexTypeImage(reptile.sexType);
+                        dialog.dismiss();
+
+                    } else if (options[item].equals("Neznámý")) {
+                        reptile.sexType = "neznámý";
+                        setSexTypeImage(reptile.sexType);
+                        dialog.dismiss();
+                    } else if (options[item].equals("zrušit")) {
+                        dialog.dismiss();
+                    }
+                }
+            });
+            builder.show();
+        }
+    }
 
     public void updateBtnClick(View view) {
         if(editing){
+            reptile.name = nameTxt.getText().toString();
+            reptile.species = speciesTxt.getText().toString();
+            reptile.birthDay = dateTxt.getText().toString();
+            if(imageWasChange)
+                reptile.image = saveImage(reptileImage.getDrawingCache(), reptile.name + "-" + UUID.randomUUID().toString());
 
+            reptile.save();
+
+            this.finish();
+            startActivity(getIntent());
         }
     }
 
@@ -392,19 +444,21 @@ public class ShowReptileActivity<Lazy> extends AppCompatActivity implements Date
     }
 
     /*
-    *
+    * Select image
      */
 
     public void changeImageClick(View view){
-        if(editing)
+        if(editing) {
             selectImage(this);
+            imageWasChange = true;
+        }
     }
 
     private void selectImage(Context context) {
         final CharSequence[] options = { "Vyfotit", "Vybrat z galerie","Zrušit" };
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Choose your profile picture");
+        builder.setTitle("Vyberte obrázek");
 
         builder.setItems(options, new DialogInterface.OnClickListener() {
 
@@ -425,5 +479,28 @@ public class ShowReptileActivity<Lazy> extends AppCompatActivity implements Date
             }
         });
         builder.show();
+    }
+
+    private String saveImage(Bitmap bitmap, String filename){
+        ContextWrapper cw = new ContextWrapper(getApplicationContext());
+        File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
+        File file = new File(directory, filename + ".jpg");
+        if (!file.exists()) {
+            Log.d("path", file.toString());
+            FileOutputStream fos = null;
+            try {
+                fos = new FileOutputStream(file);
+                filename = file.getAbsolutePath();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                Log.d("filename: ", " done ");
+                fos.flush();
+                fos.close();
+            } catch (java.io.IOException e) {
+                e.printStackTrace();
+            }
+        }
+        Log.d("filename: ", " " + filename);
+
+        return filename;
     }
 }
