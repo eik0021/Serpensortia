@@ -41,28 +41,18 @@ public class ScanQrActivity extends BaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-        if(result != null){
-            if(result.getContents() != null){
-               /* AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setMessage(result.getContents());
-                builder.setTitle("Výsledek čtění");
-
-                AlertDialog dialog = builder.create();
-                dialog.show();*/
+        if (result != null) {
+            if (result.getContents() != null) {
                 Reptile reptile = Reptile.findByQR(result.getContents());
-                if(reptile != null){
+                if (reptile != null) {
                     Log.d("qr_scan", "onActivityResult:  read value is : " + result.getContents() + "found in db :" + reptile.qrcode);
                     finish();
                     startActivity(new Intent(this, AnimalMainActivity.class));
-                       Intent openReptile = new Intent(this, ShowReptileActivity.class);
-                       openReptile.putExtra("reptile_qrcode", result.getContents());
-                       startActivity(openReptile);
-                   //finish();
+                    Intent openReptile = new Intent(this, ShowReptileActivity.class);
+                    openReptile.putExtra("reptile_qrcode", result.getContents());
+                    startActivity(openReptile);
                 }
             }
-        }
-        else {
-            startActivity(new Intent(this, AnimalMainActivity.class));
         }
     }
 }
