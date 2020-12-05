@@ -146,7 +146,7 @@ public class FeedingActivity extends AppCompatActivity implements DatePickerDial
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.show_reptile_menu, menu);
+        getMenuInflater().inflate(R.menu.base_menu, menu);
         return true;
     }
 

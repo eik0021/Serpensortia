@@ -14,11 +14,4 @@
         android:title="smazat"
         app:showAsAction="never" />
 
-    <item
-        android:id="@+id/scanQr"
-        android:orderInCategory="300"
-        android:title="Přidat QR code"
-        app:showAsAction="never" />
-
-
 </menu>

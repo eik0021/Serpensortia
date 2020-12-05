@@ -6,7 +6,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
+import com.example.serpensortia.model.Reptile;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
@@ -41,13 +43,26 @@ public class ScanQrActivity extends BaseActivity {
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if(result != null){
             if(result.getContents() != null){
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+               /* AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setMessage(result.getContents());
                 builder.setTitle("Výsledek čtění");
 
                 AlertDialog dialog = builder.create();
-                dialog.show();
+                dialog.show();*/
+                Reptile reptile = Reptile.findByQR(result.getContents());
+                if(reptile != null){
+                    Log.d("qr_scan", "onActivityResult:  read value is : " + result.getContents() + "found in db :" + reptile.qrcode);
+                    finish();
+                    startActivity(new Intent(this, AnimalMainActivity.class));
+                       Intent openReptile = new Intent(this, ShowReptileActivity.class);
+                       openReptile.putExtra("reptile_qrcode", result.getContents());
+                       startActivity(openReptile);
+                   //finish();
+                }
             }
+        }
+        else {
+            startActivity(new Intent(this, AnimalMainActivity.class));
         }
     }
 }

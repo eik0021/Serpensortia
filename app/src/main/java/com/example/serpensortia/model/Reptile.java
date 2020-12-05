@@ -42,6 +42,10 @@ public class Reptile extends Model {
         return new Select().from(Reptile.class).where("reptile_name = ?", name).executeSingle();
     }
 
+    public static Reptile findByQR(String qrCode){
+        return new Select().from(Reptile.class).where("reptile_qrcode = ?", qrCode).executeSingle();
+    }
+
     public static Reptile findById(long id){
         return new Select().from(Reptile.class).where("id = ?", id).executeSingle();
     }

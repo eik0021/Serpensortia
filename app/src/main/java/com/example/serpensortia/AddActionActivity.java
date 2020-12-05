@@ -129,7 +129,7 @@ public class AddActionActivity extends AppCompatActivity implements DatePickerDi
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.show_reptile_menu, menu);
+        getMenuInflater().inflate(R.menu.base_menu, menu);
         return true;
     }
 

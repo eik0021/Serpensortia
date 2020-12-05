@@ -19,6 +19,8 @@ import com.example.serpensortia.model.Group;
 import com.example.serpensortia.model.Reptile;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -56,14 +58,14 @@ import java.util.UUID;
 
 import static java.util.Comparator.comparing;
 
-public class ShowReptileActivity<Lazy> extends AppCompatActivity implements DatePickerDialog.OnDateSetListener{
+public class ShowReptileActivity<Lazy> extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
     private ImageView reptileImage, sexTypeImage;
     private EditText nameTxt, speciesTxt;
     private TextView dateTxt, actionListTitle, feedingListTitle;
     private Spinner groupSpinner;
     private ListView actionList, feedingList;
 
-    private  Reptile reptile;
+    private Reptile reptile;
 
     private Animation rotateOpen, rotateClose, fromBottom, toBottom;
     private FloatingActionButton fab, addActionFab, addFeedingFab;
@@ -76,6 +78,7 @@ public class ShowReptileActivity<Lazy> extends AppCompatActivity implements Date
     boolean imageWasChange = false;
 
     boolean editing = false;
+    boolean isScannigQR = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,8 +124,9 @@ public class ShowReptileActivity<Lazy> extends AppCompatActivity implements Date
         });
 
         Intent intent = getIntent();
-        long reptileId = intent.getLongExtra("reptile_name",0);
-        Log.d("reptile", "onCreate: reptile id is : "+ reptileId);
+        long reptileId = intent.getLongExtra("reptile_name", -1);
+        String reptileQrCode = intent.getStringExtra("reptile_qrcode");
+
 
         ActiveAndroid.initialize(getApplication());
 
@@ -135,7 +139,13 @@ public class ShowReptileActivity<Lazy> extends AppCompatActivity implements Date
         dateTxt = findViewById(R.id.dateTextView);
         groupSpinner = findViewById(R.id.spinnerGroup);
 
-        reptile = Reptile.findById(reptileId);
+        if (reptileId != -1) {
+            reptile = Reptile.findById(reptileId);
+        } else {
+            reptile = Reptile.findByQR(reptileQrCode);
+        }
+
+        Log.d("reptile", "onCreate: reptile qr is : " + reptile.qrcode);
 
         //set group
         List<Group> groupsList = (ArrayList<Group>) Group.getAllGroups();
@@ -148,7 +158,7 @@ public class ShowReptileActivity<Lazy> extends AppCompatActivity implements Date
         groupSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if(editing) {
+                if (editing) {
                     Log.d("onSelected", "onItemSelected: " + parent.getItemAtPosition(position).toString());
                     reptile.group = (Group) parent.getItemAtPosition(position);
                 }
@@ -161,8 +171,8 @@ public class ShowReptileActivity<Lazy> extends AppCompatActivity implements Date
         });
 
         //set image
-        File imgFile = new  File(reptile.image);
-        if(imgFile.exists()){
+        File imgFile = new File(reptile.image);
+        if (imgFile.exists()) {
             Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
             reptileImage.setImageBitmap(myBitmap);
         }
@@ -171,10 +181,10 @@ public class ShowReptileActivity<Lazy> extends AppCompatActivity implements Date
         feedingList = findViewById(R.id.feedingList);
 
         //setup action list view
-        List<Action> aList =  reptile.actions();
+        List<Action> aList = reptile.actions();
         Collections.sort(aList);
         ArrayList<Action> actions = (ArrayList<Action>) aList;
-        ArrayAdapter<Action> actionAdapter = new ArrayAdapter<Action>(this,android.R.layout.simple_list_item_1, actions);
+        ArrayAdapter<Action> actionAdapter = new ArrayAdapter<Action>(this, android.R.layout.simple_list_item_1, actions);
         actionList.setAdapter(actionAdapter);
 
         actionList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -191,14 +201,14 @@ public class ShowReptileActivity<Lazy> extends AppCompatActivity implements Date
         List<Feeding> fList = reptile.feedings();
         Collections.sort(fList);
         ArrayList<Feeding> feedings = (ArrayList<Feeding>) fList;
-        ArrayAdapter<Feeding> feedingAdapter = new ArrayAdapter<Feeding>(this,android.R.layout.simple_list_item_1, feedings);
+        ArrayAdapter<Feeding> feedingAdapter = new ArrayAdapter<Feeding>(this, android.R.layout.simple_list_item_1, feedings);
         feedingList.setAdapter(feedingAdapter);
 
         feedingList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Feeding selectedItem = (Feeding) parent.getItemAtPosition(position);
-                Log.d("item click", "onItemClick: note: " + selectedItem.foodType );
+                Log.d("item click", "onItemClick: note: " + selectedItem.foodType);
                 Intent intent = new Intent(ShowReptileActivity.super.getApplicationContext(), FeedingActivity.class);
                 intent.putExtra("feeding_id", selectedItem.getId());
                 startActivityForResult(intent, 0);
@@ -218,7 +228,7 @@ public class ShowReptileActivity<Lazy> extends AppCompatActivity implements Date
         setComponentEnable(false);
     }
 
-    private void setComponentEnable(boolean val){
+    private void setComponentEnable(boolean val) {
         nameTxt.setEnabled(val);
         speciesTxt.setEnabled(val);
         groupSpinner.setEnabled(val);
@@ -227,14 +237,14 @@ public class ShowReptileActivity<Lazy> extends AppCompatActivity implements Date
         canSelectDate = val;
     }
 
-    private void enableLists(boolean val){
+    private void enableLists(boolean val) {
         feedingList.setVisibility(val ? View.VISIBLE : View.GONE);
         actionList.setVisibility(val ? View.VISIBLE : View.GONE);
         feedingListTitle.setVisibility(val ? View.VISIBLE : View.GONE);
         actionListTitle.setVisibility(val ? View.VISIBLE : View.GONE);
     }
 
-    private void setButtons(boolean val){
+    private void setButtons(boolean val) {
         fab.setVisibility(val ? View.GONE : View.VISIBLE);
         saveUpdate.setVisibility(val ? View.VISIBLE : View.GONE);
     }
@@ -245,46 +255,46 @@ public class ShowReptileActivity<Lazy> extends AppCompatActivity implements Date
         isOpen = !isOpen;
     }
 
-    private void onAddFeedingClick(){
+    private void onAddFeedingClick() {
         Intent addFeeding = new Intent(this, FeedingActivity.class);
         addFeeding.putExtra("reptile_id", reptile.getId());
         startActivityForResult(addFeeding, 0);
     }
 
-    private void onAddActionClick(){
+    private void onAddActionClick() {
         Intent addAction = new Intent(this, AddActionActivity.class);
         addAction.putExtra("reptile_id", reptile.getId());
         startActivityForResult(addAction, 0);
     }
 
-    private void setVisibility(Boolean isOpen){
-        if(!isOpen){
+    private void setVisibility(Boolean isOpen) {
+        if (!isOpen) {
             addFeedingFab.setVisibility(View.VISIBLE);
             addActionFab.setVisibility(View.VISIBLE);
-        }else{
+        } else {
             addFeedingFab.setVisibility(View.INVISIBLE);
             addActionFab.setVisibility(View.INVISIBLE);
         }
     }
 
-    private void setAnimation(Boolean isOpen){
-        if(!isOpen){
+    private void setAnimation(Boolean isOpen) {
+        if (!isOpen) {
             addActionFab.startAnimation(fromBottom);
             addFeedingFab.startAnimation(fromBottom);
             fab.startAnimation(rotateOpen);
-        }else{
+        } else {
             addActionFab.startAnimation(toBottom);
             addFeedingFab.startAnimation(toBottom);
             fab.startAnimation(rotateClose);
         }
     }
 
-    private void setSexTypeImage(String gender){
-        if(gender.equals("samec")){
+    private void setSexTypeImage(String gender) {
+        if (gender.equals("samec")) {
             sexTypeImage.setImageResource(R.drawable.male_vector);
-        }else if(gender.equals("samice")){
+        } else if (gender.equals("samice")) {
             sexTypeImage.setImageResource(R.drawable.female_vector);
-        } else if(gender.equals("neznámý")){
+        } else if (gender.equals("neznámý")) {
             sexTypeImage.setImageResource(R.drawable.ic_unknown);
         }
     }
@@ -301,34 +311,41 @@ public class ShowReptileActivity<Lazy> extends AppCompatActivity implements Date
 
         //noinspection SimplifiableIfStatement
         switch (id) {
-            case R.id.action_edit :
+            case R.id.action_edit:
                 Toast.makeText(ShowReptileActivity.this, "Action edit clicked", Toast.LENGTH_LONG).show();
                 startEditing();
 
                 return true;
 
-            case R.id.action_delete :
+            case R.id.action_delete:
                 Toast.makeText(ShowReptileActivity.this, "Action delete clicked", Toast.LENGTH_LONG).show();
                 Feeding.deleteByReptileId(reptile.getId());
                 Action.deleteByReptileId(reptile.getId());
                 reptile.delete();
                 finish();
                 return true;
+            case R.id.scanQr:
+                Toast.makeText(ShowReptileActivity.this, "Action scan QR code clicked", Toast.LENGTH_LONG).show();
+                if (!editing) {
+                    scanQr();
+                    isScannigQR = true;
+                }
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    private void startEditing(){
+    private void startEditing() {
         enableLists(false);
         setComponentEnable(true);
         setButtons(true);
         editing = true;
     }
 
-    public void onSexTypeClick(View view){
-        if(editing){
-            final CharSequence[] options = { "Samec", "Samice","Neznámý", "zrušit" };
+    public void onSexTypeClick(View view) {
+        if (editing) {
+            final CharSequence[] options = {"Samec", "Samice", "Neznámý", "zrušit"};
 
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Zvolte pohlaví");
@@ -361,11 +378,11 @@ public class ShowReptileActivity<Lazy> extends AppCompatActivity implements Date
     }
 
     public void updateBtnClick(View view) {
-        if(editing){
+        if (editing) {
             reptile.name = nameTxt.getText().toString();
             reptile.species = speciesTxt.getText().toString();
             reptile.birthDay = dateTxt.getText().toString();
-            if(imageWasChange)
+            if (imageWasChange)
                 reptile.image = saveImage(reptileImage.getDrawingCache(), reptile.name + "-" + UUID.randomUUID().toString());
 
             reptile.save();
@@ -376,15 +393,15 @@ public class ShowReptileActivity<Lazy> extends AppCompatActivity implements Date
     }
 
     /*
-    *CALENDAR METHODS
+     *CALENDAR METHODS
      */
     public void onBirthDateClick(View view) {
-        if(editing){
+        if (editing) {
             showDatePickerDialog();
         }
     }
 
-    private void showDatePickerDialog(){
+    private void showDatePickerDialog() {
         DatePickerDialog datePickerDialog = new DatePickerDialog(
                 this,
                 this,
@@ -398,64 +415,79 @@ public class ShowReptileActivity<Lazy> extends AppCompatActivity implements Date
 
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-        String date = dayOfMonth + "." + (month+1) + "." + year;
+        String date = dayOfMonth + "." + (month + 1) + "." + year;
         dateTxt.setText(date);
     }
 
 
     /*
-    *onActivityResult
+     *onActivityResult
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode != RESULT_CANCELED) {
-            switch (requestCode) {
-                case 0:
-                    if (resultCode == RESULT_OK && data != null) {
-                        Bitmap selectedImage = (Bitmap) data.getExtras().get("data");
-                        reptileImage.setImageBitmap(selectedImage);
-                    }
-                    break;
-                case 1:
-                    if (resultCode == RESULT_OK && data != null) {
-                        Uri selectedImage = data.getData();
-                        String[] filePathColumn = {MediaStore.Images.Media.DATA};
-                        if (selectedImage != null) {
-                            Cursor cursor = getContentResolver().query(selectedImage,
-                                    filePathColumn, null, null, null);
-                            if (cursor != null) {
-                                cursor.moveToFirst();
-
-                                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                                String picturePath = cursor.getString(columnIndex);
-                                reptileImage.setImageBitmap(BitmapFactory.decodeFile(picturePath));
-                                cursor.close();
-                            }
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        if (!isScannigQR) {
+            if (resultCode != RESULT_CANCELED) {
+                switch (requestCode) {
+                    case 0:
+                        if (resultCode == RESULT_OK && data != null) {
+                            Bitmap selectedImage = (Bitmap) data.getExtras().get("data");
+                            reptileImage.setImageBitmap(selectedImage);
                         }
+                        break;
+                    case 1:
+                        if (resultCode == RESULT_OK && data != null) {
+                            Uri selectedImage = data.getData();
+                            String[] filePathColumn = {MediaStore.Images.Media.DATA};
+                            if (selectedImage != null) {
+                                Cursor cursor = getContentResolver().query(selectedImage,
+                                        filePathColumn, null, null, null);
+                                if (cursor != null) {
+                                    cursor.moveToFirst();
 
-                    }
-                    break;
+                                    int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                                    String picturePath = cursor.getString(columnIndex);
+                                    reptileImage.setImageBitmap(BitmapFactory.decodeFile(picturePath));
+                                    cursor.close();
+                                }
+                            }
+
+                        }
+                        break;
+                }
+                return;
             }
-        }else {
-            this.finish();
-            startActivity(getIntent());
+        } else {
+            if (result != null) {
+                if (result.getContents() != null) {
+                    reptile.qrcode = result.getContents();
+                    reptile.save();
+                    Log.d("reptile", "qrcode is:  " + reptile.qrcode);
+                    isScannigQR = false;
+                    return;
+                }
+            }
         }
+
+        this.finish();
+        startActivity(getIntent());
+
     }
 
     /*
-    * Select image
+     * Select image
      */
 
-    public void changeImageClick(View view){
-        if(editing) {
+    public void changeImageClick(View view) {
+        if (editing) {
             selectImage(this);
             imageWasChange = true;
         }
     }
 
     private void selectImage(Context context) {
-        final CharSequence[] options = { "Vyfotit", "Vybrat z galerie","Zrušit" };
+        final CharSequence[] options = {"Vyfotit", "Vybrat z galerie", "Zrušit"};
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Vyberte obrázek");
@@ -471,7 +503,7 @@ public class ShowReptileActivity<Lazy> extends AppCompatActivity implements Date
 
                 } else if (options[item].equals("Vybrat z galerie")) {
                     Intent pickPhoto = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                    startActivityForResult(pickPhoto , 1);
+                    startActivityForResult(pickPhoto, 1);
 
                 } else if (options[item].equals("Zrušit")) {
                     dialog.dismiss();
@@ -481,7 +513,7 @@ public class ShowReptileActivity<Lazy> extends AppCompatActivity implements Date
         builder.show();
     }
 
-    private String saveImage(Bitmap bitmap, String filename){
+    private String saveImage(Bitmap bitmap, String filename) {
         ContextWrapper cw = new ContextWrapper(getApplicationContext());
         File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
         File file = new File(directory, filename + ".jpg");
@@ -502,5 +534,14 @@ public class ShowReptileActivity<Lazy> extends AppCompatActivity implements Date
         Log.d("filename: ", " " + filename);
 
         return filename;
+    }
+
+    private void scanQr() {
+        IntentIntegrator iterator = new IntentIntegrator(this);
+        iterator.setCaptureActivity(CaptureAct.class);
+        iterator.setOrientationLocked(false);
+        iterator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES);
+        iterator.setPrompt("skenování kód");
+        iterator.initiateScan();
     }
 }
