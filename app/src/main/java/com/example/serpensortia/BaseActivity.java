@@ -49,7 +49,7 @@ abstract class BaseActivity extends AppCompatActivity implements BottomNavigatio
             } else if (itemId == R.id.action_profile) {
                 startActivity(new Intent(this, AddAnimalActivity.class));
             } else if (itemId == R.id.action_notification) {
-                startActivity(new Intent(this, AddAnimalActivity.class));
+                startActivity(new Intent(this, ScanQrActivity.class));
             } else if (itemId == R.id.action_more) {
                 startActivity(new Intent(this, AddAnimalActivity.class));
             }
