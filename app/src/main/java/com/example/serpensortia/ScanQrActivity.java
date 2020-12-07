@@ -4,6 +4,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -51,6 +52,27 @@ public class ScanQrActivity extends BaseActivity {
                     Intent openReptile = new Intent(this, ShowReptileActivity.class);
                     openReptile.putExtra("reptile_qrcode", result.getContents());
                     startActivity(openReptile);
+                }else{
+                    AlertDialog.Builder builder;
+                    builder = new AlertDialog.Builder(this);
+                    builder.setMessage("Nenalezeno, Skenovat znovu ?")
+                            .setCancelable(false)
+                            .setPositiveButton("Znovu", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                    scanQr();
+                                }
+                            })
+                            .setNegativeButton("Domů", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                    startActivity(new Intent(ScanQrActivity.this, AnimalMainActivity.class));
+                                }
+                            });
+                    //Creating dialog box
+                    AlertDialog alert = builder.create();
+                    alert.setTitle("Záznam nenalezen");
+                    alert.show();
                 }
             }
         }
