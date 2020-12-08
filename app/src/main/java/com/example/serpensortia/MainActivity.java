@@ -6,11 +6,14 @@ import androidx.biometric.BiometricManager;
 import androidx.biometric.BiometricPrompt;
 import androidx.core.content.ContextCompat;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,14 +21,25 @@ import android.widget.Toast;
 import java.util.concurrent.Executor;
 
 public class MainActivity extends AppCompatActivity {
+    private EditText pswdTxt;
+    private String password;
+    public static final String SHARED_PREFS = "sharedPrefs";
+    public static final String PSWD = "password";
+    private SharedPreferences sharedpreferences;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        sharedpreferences = getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
+        password = sharedpreferences.getString(PSWD, "");
+
         TextView msg_text = findViewById(R.id.txt_msg);
         Button login_btn = findViewById(R.id.login_btn);
+
+        pswdTxt = findViewById(R.id.editTextTextPassword);
 
         BiometricManager biometricManager = BiometricManager.from(this);
         switch (biometricManager.canAuthenticate()){
@@ -83,5 +97,15 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+    }
+
+    public void loginWithPswd(View view) {
+        if(password.equals(pswdTxt.getText().toString())){
+            Intent intent = new Intent(getApplicationContext(),
+                    AnimalMainActivity.class);
+            startActivity(intent);
+        }else {
+            Toast.makeText(this, "Špatné heslo!!!", Toast.LENGTH_SHORT).show();
+        }
     }
 }

@@ -2,7 +2,6 @@ package com.example.serpensortia;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
@@ -46,12 +45,10 @@ abstract class BaseActivity extends AppCompatActivity implements BottomNavigatio
             int itemId = item.getItemId();
             if (itemId == R.id.action_home) {
                 startActivity(new Intent(this, AnimalMainActivity.class));
-            } else if (itemId == R.id.action_profile) {
+            } else if (itemId == R.id.action_add) {
                 startActivity(new Intent(this, AddAnimalActivity.class));
-            } else if (itemId == R.id.action_notification) {
+            } else if (itemId == R.id.action_search) {
                 startActivity(new Intent(this, ScanQrActivity.class));
-            } else if (itemId == R.id.action_more) {
-                startActivity(new Intent(this, AddAnimalActivity.class));
             }
             finish();
         }, 300);

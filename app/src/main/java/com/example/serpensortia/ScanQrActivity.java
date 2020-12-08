@@ -1,12 +1,10 @@
 package com.example.serpensortia;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Bundle;
 import android.util.Log;
 
 import com.example.serpensortia.model.Reptile;
@@ -22,7 +20,7 @@ public class ScanQrActivity extends BaseActivity {
 
     @Override
     protected int getNavigationMenuItemId() {
-        return R.id.action_notification;
+        return R.id.action_search;
     }
 
     @Override

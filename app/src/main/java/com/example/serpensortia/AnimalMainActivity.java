@@ -1,12 +1,18 @@
 package com.example.serpensortia;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -15,6 +21,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.serpensortia.adapter.ReptileAdapter;
+import com.example.serpensortia.model.Group;
 import com.example.serpensortia.model.Reptile;
 
 import java.util.ArrayList;
@@ -27,8 +34,16 @@ public class AnimalMainActivity extends BaseActivity {
     void init() {
         listView = findViewById(R.id.animalListView);
 
-        ArrayList<Reptile> reptileList = (ArrayList<Reptile>) Reptile.findAll();
-        Log.d("reptile", "init: reptile count " + reptileList.size());
+        ArrayList<Reptile> reptileList;
+
+        Intent intent = getIntent();
+        long group_id = intent.getLongExtra("reptile_groupId", -1);
+        if(group_id == -1){
+            reptileList = (ArrayList<Reptile>) Reptile.findAll();
+            Log.d("reptile", "init: reptile count " + reptileList.size());
+        } else {
+            reptileList = (ArrayList<Reptile>) Reptile.findByGroup(group_id);
+        }
 
         ReptileAdapter reptileAdapter = new ReptileAdapter(this, R.layout.list_row, reptileList);
 
@@ -79,8 +94,51 @@ public class AnimalMainActivity extends BaseActivity {
                 startActivityForResult(new Intent(this, GroupActivity.class), 0);
                 return true;
 
+            case R.id.action_change_pswd :
+                changePSWD();
+                return true;
+
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void savePSWD(String pswd){
+        final String SHARED_PREFS = "sharedPrefs";
+        final String PSWD = "password";
+        SharedPreferences sharedpreferences = getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+        editor.putString(PSWD, pswd);
+        editor.apply();
+    }
+
+
+    private void changePSWD(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Zadejte nové heslo");
+
+        // Set up the input
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        builder.setView(input);
+
+        // Set up the buttons
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if(!input.getText().toString().isEmpty()){
+                       savePSWD(input.getText().toString());
+                       dialog.cancel();
+                }
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
     }
 }

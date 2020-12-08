@@ -2,10 +2,17 @@ package com.example.serpensortia;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import android.Manifest;
 import android.app.DatePickerDialog;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.CalendarContract;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,8 +31,9 @@ import com.example.serpensortia.model.Reptile;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
-public class AddActionActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener{
+public class AddActionActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
     private EditText noteTxt;
     private TextView dateTxt;
     private Button saveBtn;
@@ -56,7 +64,7 @@ public class AddActionActivity extends AppCompatActivity implements DatePickerDi
         reptile_id = intent.getLongExtra("reptile_id", -1);
         action_id = intent.getLongExtra("action_id", -1);
 
-        if(reptile_id != -1){
+        if (reptile_id != -1) {
             reptile = Reptile.findById(reptile_id);
 
             calendar = Calendar.getInstance();
@@ -65,7 +73,7 @@ public class AddActionActivity extends AppCompatActivity implements DatePickerDi
             dateTxt.setText(date);
         }
 
-        if(action_id == -1){
+        if (action_id == -1) {
             action = new Action();
         } else {
             action = Action.findById(action_id);
@@ -78,7 +86,7 @@ public class AddActionActivity extends AppCompatActivity implements DatePickerDi
 
     }
 
-    private void setEnableComponents(boolean val){
+    private void setEnableComponents(boolean val) {
         noteTxt.setEnabled(val);
         canSetDate = val;
 
@@ -87,7 +95,7 @@ public class AddActionActivity extends AppCompatActivity implements DatePickerDi
 
     public void saveRecord(View view) {
         //create new record
-        if(action_id == -1 && reptile_id != -1){
+        if (action_id == -1 && reptile_id != -1) {
             Log.d("reptile", "saveRecord: id " + reptile_id);
             action.date = dateTxt.getText().toString();
             action.note = noteTxt.getText().toString();
@@ -95,7 +103,7 @@ public class AddActionActivity extends AppCompatActivity implements DatePickerDi
             action.save();
             finish();
         } else // update
-            if(action_id != -1 && reptile_id == -1){
+            if (action_id != -1 && reptile_id == -1) {
                 action.date = dateTxt.getText().toString();
                 action.note = noteTxt.getText().toString();
                 action.save();
@@ -104,12 +112,12 @@ public class AddActionActivity extends AppCompatActivity implements DatePickerDi
     }
 
     public void onDateClick(View view) {
-        if(canSetDate) {
+        if (canSetDate) {
             showDatePickerDialog();
         }
     }
 
-    private void showDatePickerDialog(){
+    private void showDatePickerDialog() {
         DatePickerDialog datePickerDialog = new DatePickerDialog(
                 this,
                 this,
@@ -122,7 +130,7 @@ public class AddActionActivity extends AppCompatActivity implements DatePickerDi
 
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-        String date = dayOfMonth + "." + (month+1) + "." + year;
+        String date = dayOfMonth + "." + (month + 1) + "." + year;
         dateTxt.setText(date);
     }
 
@@ -139,14 +147,14 @@ public class AddActionActivity extends AppCompatActivity implements DatePickerDi
 
         //noinspection SimplifiableIfStatement
         switch (id) {
-            case R.id.action_edit :
+            case R.id.action_edit:
                 Toast.makeText(AddActionActivity.this, "Action edit clicked", Toast.LENGTH_LONG).show();
                 setEnableComponents(true);
                 return true;
 
-            case R.id.action_delete :
+            case R.id.action_delete:
                 Toast.makeText(AddActionActivity.this, "Action delete clicked", Toast.LENGTH_LONG).show();
-                if(action_id != -1 && reptile_id == -1){
+                if (action_id != -1 && reptile_id == -1) {
                     action.delete();
                     finish();
                 }
@@ -154,5 +162,9 @@ public class AddActionActivity extends AppCompatActivity implements DatePickerDi
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void addEventToCalendar() {
+
     }
 }

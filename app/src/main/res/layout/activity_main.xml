@@ -4,39 +4,76 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center"
     android:background="@drawable/background"
+    android:gravity="center"
+    android:orientation="vertical"
     tools:context=".MainActivity">
+
+
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Pro přihlášení použíte otisk prstu!"
-        android:textColor="#fafafa"
-         />
+        android:text="Zadejte heslo"
+        android:textColor="#fafafa" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="134dp"
+        android:gravity="center_horizontal|center_vertical"
+        android:orientation="horizontal">
+
+
+        <EditText
+            android:id="@+id/editTextTextPassword"
+            android:layout_width="wrap_content"
+            android:layout_height="59dp"
+            android:layout_marginHorizontal="12dp"
+            android:layout_marginVertical="12dp"
+            android:background="#1EFFFFFF"
+            android:ems="10"
+            android:inputType="textPassword"
+            android:textAlignment="center" />
+
+        <Button
+            android:id="@+id/login_pass_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="12dp"
+            android:layout_marginVertical="12dp"
+            android:background="#fff"
+            android:onClick="loginWithPswd"
+            android:text="Přiihlásit"
+            tools:ignore="OnClick" />
+
+    </LinearLayout>
+
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_baseline_fingerprint_24"
-        android:layout_marginVertical="20dp"/>
+        android:layout_marginVertical="20dp"
+        android:src="@drawable/ic_baseline_fingerprint_24" />
 
     <TextView
         android:id="@+id/txt_msg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#ff0000"
-        />
+        android:textColor="#ff0000" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pro přihlášení použíte otisk prstu!"
+        android:textColor="#fafafa" />
 
     <Button
         android:id="@+id/login_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Login"
-        android:background="#fff"
         android:layout_marginVertical="12dp"
-        />
+        android:background="#fff"
+        android:text="Otisk prstu" />
 
 
 </LinearLayout>

@@ -8,4 +8,10 @@
         android:title="spravovat skupiny"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/action_change_pswd"
+        android:orderInCategory="300"
+        android:title="změna hesla"
+        app:showAsAction="never" />
+
 </menu>
