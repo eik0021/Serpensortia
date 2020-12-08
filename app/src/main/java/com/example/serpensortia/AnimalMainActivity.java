@@ -76,7 +76,7 @@ public class AnimalMainActivity extends BaseActivity {
         //noinspection SimplifiableIfStatement
         switch (id) {
             case R.id.action_manage_groups :
-
+                startActivityForResult(new Intent(this, GroupActivity.class), 0);
                 return true;
 
         }

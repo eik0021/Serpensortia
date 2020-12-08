@@ -2,11 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.serpensortia">
 
-    <uses-permission android:name="android.permission.CAMERA"/>
-    <uses-feature android:name="android.hardware.camera"/>
-    <uses-feature android:name="android.hardware.camera.autofocus"/>
-
-
     <application
         android:name="com.activeandroid.app.Application"
         android:allowBackup="true"
@@ -15,7 +10,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ScanQrActivity"></activity>
+        <activity android:name=".GroupActivity"></activity>
+        <activity android:name=".ScanQrActivity" />
         <activity android:name=".FeedingActivity" />
         <activity
             android:name=".AddActionActivity"
@@ -35,12 +31,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".CaptureAct"
+        <activity
+            android:name=".CaptureAct"
             android:screenOrientation="fullSensor"
             android:stateNotNeeded="true"
-            android:windowSoftInputMode="stateAlwaysHidden">
-
-        </activity>
+            android:windowSoftInputMode="stateAlwaysHidden"></activity>
 
         <meta-data
             android:name="AA_DB_NAME"
@@ -56,6 +51,11 @@
             android:exported="false" />
     </application>
 
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+    <uses-feature android:name="android.hardware.camera" />
+
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />
+
+    <uses-permission android:name="android.permission.CAMERA" />
 
 </manifest>
