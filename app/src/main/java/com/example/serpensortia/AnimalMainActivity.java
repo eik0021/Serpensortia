@@ -5,6 +5,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import android.os.Environment;
 import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
@@ -17,6 +20,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.example.serpensortia.adapter.ReptileAdapter;
 import com.example.serpensortia.model.Action;
@@ -31,6 +36,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +47,8 @@ import static java.lang.reflect.Modifier.STATIC;
 
 public class AnimalMainActivity extends BaseActivity {
     private ListView listView;
+
+    private static final String BACKUP_FILENAME = "serpensortia_backup.txt";
 
     @Override
     void init() {
@@ -158,8 +168,6 @@ public class AnimalMainActivity extends BaseActivity {
 
         Gson gson = new Gson();
 
-        Log.d("json export", "exportDb:");
-
         List<FeedingDto> feedings = Feeding.getAllDto();
         String jsonFeeding = gson.toJson(feedings);
 
@@ -172,19 +180,35 @@ public class AnimalMainActivity extends BaseActivity {
         List<GroupDto> groups = Group.getAllDto();
         String jsonGroup = gson.toJson(groups);
 
-        Log.d("json export", "exportDb:");
-
         String exportJson =
-                "{"+
-                        "groups: " + jsonGroup + "," +
-                        "reptiles: " + jsonReptile + "," +
-                        "actions: " + jsonAction + "," +
-                        "feedings: " + jsonFeeding  +
-                "}";
+                "{"+"groups: " + jsonGroup + "," + "reptiles: " + jsonReptile + "," + "actions: " + jsonAction + "," + "feedings: " + jsonFeeding +"}";
 
-
-        Toast.makeText(this, exportJson, Toast.LENGTH_LONG).show();
-
-        Log.d("json export", "exportDb: "+ exportJson);
+        createExportFile(exportJson);
     }
+
+    private void createExportFile(String exportJson) {
+        String state = Environment.getExternalStorageState();
+        //external storage availability check
+        if (!Environment.MEDIA_MOUNTED.equals(state)) {
+            return;
+        }
+        File file = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_DOCUMENTS), BACKUP_FILENAME);
+
+        FileOutputStream outputStream = null;
+        try {
+            file.createNewFile();
+            outputStream = new FileOutputStream(file, true);
+
+            outputStream.write(exportJson.getBytes());
+            outputStream.flush();
+            outputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+
 }
