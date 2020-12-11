@@ -8,7 +8,9 @@ import com.example.serpensortia.model.Reptile;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 
 public class Feeding extends Model implements Comparable<Feeding> {
@@ -52,6 +54,10 @@ public class Feeding extends Model implements Comparable<Feeding> {
         new Delete().from(Feeding.class).where("feeding_reptile = ?", id).execute();
     }
 
+    public static List<Feeding> findAll() {
+        return new Select().from(Feeding.class).orderBy("id DESC").execute();
+    }
+
     @Override
     public String toString() {
         return date + "\n potrava " + (refused == 1 ? "odmítnuta" : "přijata");
@@ -63,5 +69,16 @@ public class Feeding extends Model implements Comparable<Feeding> {
             return 0;
         }
         return o.getDate().compareTo(getDate());
+    }
+
+    public static List<FeedingDto> getAllDto(){
+        List<Feeding> feedings = findAll();
+        List<FeedingDto> result = new ArrayList<>();
+
+        for(Feeding f : feedings){
+            result.add(new FeedingDto(f));
+        }
+
+        return result;
     }
 }

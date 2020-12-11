@@ -5,10 +5,12 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Table(name = "GroupTable")
 public class Group extends Model {
+
     @Column(name = "group_name", unique = true, onUniqueConflict = Column.ConflictAction.REPLACE)
     public String name;
 
@@ -49,6 +51,21 @@ public class Group extends Model {
 
     public static List<Group> findAll() {
         return new Select().from(Group.class).orderBy("group_name DESC").execute();
+    }
+
+    public static List<GroupDto> getAllDto(){
+        List<Group> groups = getAllGroups();
+        List<GroupDto> result = new ArrayList<>();
+
+        for (Group g : groups){
+            result.add(new GroupDto(g));
+        }
+
+        return  result;
+    }
+
+    public GroupDto getDto(){
+        return new GroupDto(this);
     }
 
 }

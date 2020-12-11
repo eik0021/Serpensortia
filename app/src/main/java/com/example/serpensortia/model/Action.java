@@ -7,6 +7,7 @@ import com.activeandroid.query.Select;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -60,5 +61,16 @@ public class Action extends Model implements Comparable<Action>{
             return 0;
         }
         return o.getDate().compareTo(getDate());
+    }
+
+    public static List<ActionDto> getAllDto(){
+        List<Action> actions = findAll();
+        List<ActionDto> result = new ArrayList<>();
+
+        for (Action a : actions){
+            result.add(new ActionDto(a));
+        }
+
+        return result;
     }
 }

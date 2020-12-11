@@ -5,6 +5,7 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Table(name = "Reptile")
@@ -64,5 +65,19 @@ public class Reptile extends Model {
 
     public List<Feeding> feedings() {
         return getMany(Feeding.class, "feeding_reptile");
+    }
+
+    public ReptileDto getDto(){
+        return new ReptileDto(this);
+    }
+
+    public static List<ReptileDto> getAllDto(){
+        List<Reptile> reptiles = findAll();
+        List<ReptileDto> result = new ArrayList<>();
+        for (Reptile r : reptiles){
+            result.add(new ReptileDto(r));
+        }
+
+        return result;
     }
 }
