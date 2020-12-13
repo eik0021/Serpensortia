@@ -258,11 +258,13 @@ public class AddAnimalActivity extends BaseActivity implements DatePickerDialog.
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if(!input.getText().toString().isEmpty()){
+                if(!input.getText().toString().isEmpty() && Group.findByName(input.getText().toString()) == null){
                     Group group = new Group();
                     group.name = input.getText().toString();
                     group.save();
                     setGroupSpinner();
+                }else {
+                    Toast.makeText(AddAnimalActivity.super.getApplicationContext(), "nelze uložit", Toast.LENGTH_SHORT).show();
                 }
             }
         });

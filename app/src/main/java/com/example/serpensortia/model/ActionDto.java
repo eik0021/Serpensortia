@@ -4,7 +4,7 @@ import com.activeandroid.annotation.Column;
 
 import java.security.PublicKey;
 
-public class ActionDto {
+public class ActionDto implements DtoSaveable {
     private long actionId;
 
     private String note;
@@ -50,5 +50,16 @@ public class ActionDto {
 
     public void setReptile(ReptileDto reptile) {
         this.reptile = reptile;
+    }
+
+    @Override
+    public void saveModel() {
+        Action action = new Action();
+
+        action.note = this.note;
+        action.date = this.date;
+        action.reptile = Reptile.findByName(this.reptile.getName());
+
+        action.save();
     }
 }

@@ -2,7 +2,7 @@ package com.example.serpensortia.model;
 
 import com.activeandroid.annotation.Column;
 
-public class FeedingDto {
+public class FeedingDto implements DtoSaveable{
     private long feedingId;
 
     private String date;
@@ -81,5 +81,18 @@ public class FeedingDto {
 
     public void setReptile(ReptileDto reptile) {
         this.reptile = reptile;
+    }
+
+    @Override
+    public void saveModel() {
+        Feeding feeding = new Feeding();
+        feeding.date = this.date;
+        feeding.foodType = this.foodType;
+        feeding.itemCount = this.itemCount;
+        feeding.foodWeight = this.foodWeight;
+        feeding.refused = this.refused;
+        feeding.reptile = Reptile.findByName(this.reptile.getName());
+
+        feeding.save();
     }
 }

@@ -5,8 +5,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Environment;
 import android.text.InputType;
 import android.util.Log;
@@ -20,12 +18,11 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import com.example.serpensortia.adapter.ReptileAdapter;
 import com.example.serpensortia.model.Action;
 import com.example.serpensortia.model.ActionDto;
+import com.example.serpensortia.model.DtoSaveable;
 import com.example.serpensortia.model.Feeding;
 import com.example.serpensortia.model.FeedingDto;
 import com.example.serpensortia.model.Group;
@@ -33,17 +30,19 @@ import com.example.serpensortia.model.GroupDto;
 import com.example.serpensortia.model.Reptile;
 import com.example.serpensortia.model.ReptileDto;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-
-import static java.lang.reflect.Modifier.STATIC;
 
 public class AnimalMainActivity extends BaseActivity {
     private ListView listView;
@@ -94,6 +93,10 @@ public class AnimalMainActivity extends BaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        restartActivity();
+    }
+
+    private void restartActivity(){
         this.finish();
         startActivity(getIntent());
     }
@@ -119,6 +122,10 @@ public class AnimalMainActivity extends BaseActivity {
 
             case R.id.action_export:
                 exportDb();
+                return true;
+
+            case R.id.action_import:
+                restoreDB();
                 return true;
         }
 
@@ -164,7 +171,7 @@ public class AnimalMainActivity extends BaseActivity {
         builder.show();
     }
 
-    private void exportDb(){
+    private void exportDb() {
 
         Gson gson = new Gson();
 
@@ -181,7 +188,7 @@ public class AnimalMainActivity extends BaseActivity {
         String jsonGroup = gson.toJson(groups);
 
         String exportJson =
-                "{"+"groups: " + jsonGroup + "," + "reptiles: " + jsonReptile + "," + "actions: " + jsonAction + "," + "feedings: " + jsonFeeding +"}";
+                "{" + "groups: " + jsonGroup + "," + "reptiles: " + jsonReptile + "," + "actions: " + jsonAction + "," + "feedings: " + jsonFeeding + "}";
 
         createExportFile(exportJson);
     }
@@ -203,12 +210,93 @@ public class AnimalMainActivity extends BaseActivity {
             outputStream.write(exportJson.getBytes());
             outputStream.flush();
             outputStream.close();
+
+            Toast.makeText(this, "Úspěšně zálohováno do " + file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             e.printStackTrace();
+            Toast.makeText(this, "Chyba uložení", Toast.LENGTH_SHORT).show();
         }
     }
 
+    private void restoreDB() {
+        Gson gson = new Gson();
+        String jsonDb = readBackUpFile();
 
+        if (!jsonDb.isEmpty()) {
+            try {
+                JSONObject backupObject = new JSONObject(jsonDb);
+                String jsonFeeding = backupObject.getJSONArray("feedings").toString();
+                String jsonAction = backupObject.getJSONArray("actions").toString();
+                String jsonReptile = backupObject.getJSONArray("reptiles").toString();
+                String jsonGroup = backupObject.getJSONArray("groups").toString();
 
+                Toast.makeText(this, ""+ jsonFeeding + jsonAction +jsonReptile +jsonGroup, Toast.LENGTH_LONG).show();
+
+                Type feedingType = new TypeToken<ArrayList<FeedingDto>>(){}.getType();
+                ArrayList<DtoSaveable> feedings = gson.fromJson(jsonFeeding, feedingType);
+
+                Type actionType = new TypeToken<ArrayList<ActionDto>>(){}.getType();
+                List<DtoSaveable> actions =  gson.fromJson(jsonAction, actionType);
+
+                Type reptileType = new TypeToken<ArrayList<ReptileDto>>(){}.getType();
+                List<DtoSaveable> reptiles = gson.fromJson(jsonReptile, reptileType);
+
+                Type groupType = new TypeToken<ArrayList<GroupDto>>(){}.getType();
+                List<DtoSaveable> groups = gson.fromJson(jsonGroup, groupType);
+
+                saveDtos(groups);
+                saveDtos(reptiles);
+                saveDtos(feedings);
+                saveDtos(actions);
+
+                restartActivity();
+
+            }catch (JSONException e){
+                Toast.makeText(this, "chyba zpracování zálohy - json exception", Toast.LENGTH_LONG).show();
+                e.printStackTrace();
+            }
+        } else {
+            Toast.makeText(this, "chyba zpracování zálohy", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void saveDtos(List<DtoSaveable> dtoObjects){
+        for(DtoSaveable ds : dtoObjects){
+            ds.saveModel();
+        }
+    }
+
+    private String readBackUpFile() {
+        String jsonBackUp = "";
+
+        String state = Environment.getExternalStorageState();
+        //external storage availability check
+        if (!Environment.MEDIA_MOUNTED.equals(state)) {
+            return "";
+        }
+        File file = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_DOCUMENTS), BACKUP_FILENAME);
+
+        if (file.exists()) {
+            FileOutputStream os = null;
+            StringBuilder text = new StringBuilder();
+            try {
+                BufferedReader br = new BufferedReader(new FileReader(file));
+                String line;
+                while ((line = br.readLine()) != null) {
+                    text.append(line);
+                    text.append('\n');
+                }
+                br.close();
+                jsonBackUp = text.toString();
+            } catch (IOException e) {
+                Toast.makeText(this, "chyba při nahrávání souboru", Toast.LENGTH_LONG).show();
+            }
+        } else {
+            Toast.makeText(this, "záloha nenalezena", Toast.LENGTH_LONG).show();
+        }
+
+        return jsonBackUp;
+    }
 
 }

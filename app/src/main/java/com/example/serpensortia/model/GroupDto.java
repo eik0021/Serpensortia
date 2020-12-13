@@ -1,6 +1,6 @@
 package com.example.serpensortia.model;
 
-public class GroupDto {
+public class GroupDto implements DtoSaveable{
     private String name;
     private long groupId;
 
@@ -23,5 +23,12 @@ public class GroupDto {
 
     public void setGroup_id(long group_id) {
         this.groupId = group_id;
+    }
+
+    @Override
+    public void saveModel() {
+        Group group = new Group();
+        group.name = this.name;
+        group.save();
     }
 }

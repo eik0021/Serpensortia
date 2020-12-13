@@ -11,7 +11,7 @@ import java.util.List;
 @Table(name = "Reptile")
 public class Reptile extends Model {
 
-    @Column(name = "reptile_name")
+    @Column(name = "reptile_name", unique = true, onUniqueConflict = Column.ConflictAction.REPLACE)
     public String name = null;
 
     @Column(name = "reptile_species")

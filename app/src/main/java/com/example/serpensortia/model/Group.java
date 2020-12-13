@@ -11,7 +11,7 @@ import java.util.List;
 @Table(name = "GroupTable")
 public class Group extends Model {
 
-    @Column(name = "group_name", unique = true, onUniqueConflict = Column.ConflictAction.REPLACE)
+    @Column(name = "group_name", unique = true, onUniqueConflict = Column.ConflictAction.FAIL)
     public String name;
 
     public Group() {

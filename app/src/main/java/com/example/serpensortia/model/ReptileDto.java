@@ -2,7 +2,7 @@ package com.example.serpensortia.model;
 
 import com.activeandroid.annotation.Column;
 
-public class ReptileDto {
+public class ReptileDto implements DtoSaveable{
     private long reptileId;
 
     private String name = null;
@@ -103,5 +103,20 @@ public class ReptileDto {
 
     public void setGroup(GroupDto group) {
         this.group = group;
+    }
+
+    @Override
+    public void saveModel() {
+        Reptile reptile = new Reptile();
+        reptile.name = this.name;
+        reptile.species = this.species;
+        reptile.sexType = this.sexType;
+        reptile.birthDay = this.birthDay;
+        reptile.image = this.image;
+        reptile.qrcode = this.qrcode;
+        reptile.nfcCode = this.nfcCode;
+        reptile.group = Group.findByName(this.group.getName());
+
+        reptile.save();
     }
 }
