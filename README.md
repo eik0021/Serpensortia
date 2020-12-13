@@ -8,6 +8,7 @@ Hlavními funkcemi jsou:
 - přidávání záznamů o krmení a jiných událostech
 - ke každému zvířeti lze přidat qrcode a na základě něj zvíře najít v systému
 - aplikace je zabezpečena otiskem prstu nebo heslem
+- import/export DB
 
 autentifikace pomocí otisku prstu,
 skenování QR a čárových kódů,
@@ -16,4 +17,4 @@ ukládání dat do share preferences a sqlite (activeAndroid),
 vlastní animace tlačítek,
 rozšířené array adaptéry ,
 bottom menu, ostatní menu jsou stoučástí toolbar lišty,
-alert boxy, datepicker,
+alert boxy, datepicker, serializace/deserializace json
